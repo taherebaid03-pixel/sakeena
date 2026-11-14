@@ -86,7 +86,9 @@ const defaultProperties = [
 ];
 
 const savedPropertiesKey = "tito-properties";
+const pinnedPropertiesKey = "sakeena-pinned-properties";
 let properties = [...loadSavedProperties(), ...defaultProperties];
+let pinnedPropertyIds = loadPinnedPropertyIds();
 const grid = document.getElementById("property-grid");
 const areaFilter = document.getElementById("area-filter");
 const minPrice = document.getElementById("min-price");
@@ -209,6 +211,31 @@ function loadSavedProperties() {
   }
 }
 
+function loadPinnedPropertyIds() {
+  try {
+    const saved = localStorage.getItem(pinnedPropertiesKey);
+    if (!saved) return new Set();
+    const parsed = JSON.parse(saved);
+    if (!Array.isArray(parsed) || parsed.some((id) => typeof id !== "string" && typeof id !== "number")) {
+      throw new Error("Pinned property data must be an array of IDs.");
+    }
+    return new Set(parsed.map(String));
+  } catch (error) {
+    console.error("Could not load pinned Sakeena listings:", error);
+    return new Set();
+  }
+}
+
+function savePinnedPropertyIds(ids) {
+  try {
+    localStorage.setItem(pinnedPropertiesKey, JSON.stringify([...ids]));
+    return true;
+  } catch (error) {
+    console.error("Could not save pinned Sakeena listings:", error);
+    return false;
+  }
+}
+
 function saveProperties() {
   try {
     localStorage.setItem(savedPropertiesKey, JSON.stringify(properties.filter((property) => property.userAdded)));
@@ -263,15 +290,21 @@ function renderProperties() {
       && property.price <= maximum;
   });
 
-  if (sortFilter.value === "low") visibleProperties.sort((a, b) => a.price - b.price);
-  if (sortFilter.value === "high") visibleProperties.sort((a, b) => b.price - a.price);
+  visibleProperties.sort((a, b) => {
+    const aPinned = pinnedPropertyIds.has(String(a.id));
+    const bPinned = pinnedPropertyIds.has(String(b.id));
+    if (aPinned !== bPinned) return aPinned ? -1 : 1;
+    if (sortFilter.value === "low") return a.price - b.price;
+    if (sortFilter.value === "high") return b.price - a.price;
+    return 0;
+  });
 
   grid.innerHTML = visibleProperties.map((property) => `
     <article class="property-card" data-property-id="${escapeHTML(property.id)}">
       <div class="card-image">
         <img src="${safeImageUrl(property.image)}" alt="${escapeHTML(property.title)}" loading="lazy">
         <span class="property-tag">${escapeHTML(property.kind)} · ${escapeHTML(property.type)}</span>
-        <button class="favorite" type="button" aria-label="إضافة ${escapeHTML(property.title)} إلى المفضلة" aria-pressed="false">♡</button>
+        <button class="favorite${pinnedPropertyIds.has(String(property.id)) ? " active" : ""}" type="button" aria-label="${pinnedPropertyIds.has(String(property.id)) ? "إلغاء تثبيت" : "تثبيت"} ${escapeHTML(property.title)}" title="${pinnedPropertyIds.has(String(property.id)) ? "إلغاء التثبيت" : "تثبيت العقار"}" aria-pressed="${pinnedPropertyIds.has(String(property.id))}">${pinnedPropertyIds.has(String(property.id)) ? "♥" : "♡"}</button>
       </div>
       <div class="card-content">
         <div class="property-price">${formatPrice(property.price, property.kind)}</div>
@@ -440,6 +473,14 @@ function appendChatMessage(message, sender) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
+document.addEventListener("click", (event) => {
+  const icon = event.target.closest(".favorite, .map-expand, .map-controls button, .menu-toggle, .modal-close, .chat-header button, .chat-form button");
+  if (!icon) return;
+  icon.classList.remove("icon-burst");
+  void icon.offsetWidth;
+  icon.classList.add("icon-ray-source", "icon-burst");
+});
+
 document.getElementById("search-button").addEventListener("click", renderProperties);
 areaFilter.addEventListener("change", () => {
   renderProperties();
@@ -475,10 +516,19 @@ document.getElementById("clear-filters").addEventListener("click", () => {
 grid.addEventListener("click", (event) => {
   const favorite = event.target.closest(".favorite");
   if (!favorite) return;
-  const isFavorite = favorite.getAttribute("aria-pressed") !== "true";
-  favorite.setAttribute("aria-pressed", String(isFavorite));
-  favorite.classList.toggle("active", isFavorite);
-  favorite.textContent = isFavorite ? "♥" : "♡";
+  const propertyId = favorite.closest(".property-card")?.dataset.propertyId;
+  if (!propertyId) return;
+  const isPinned = pinnedPropertyIds.has(propertyId);
+  const nextPinnedPropertyIds = new Set(pinnedPropertyIds);
+  if (isPinned) nextPinnedPropertyIds.delete(propertyId);
+  else nextPinnedPropertyIds.add(propertyId);
+  if (!savePinnedPropertyIds(nextPinnedPropertyIds)) {
+    showToast("تعذر حفظ العقار المثبت. تحقق من مساحة التخزين في المتصفح.");
+    return;
+  }
+  pinnedPropertyIds = nextPinnedPropertyIds;
+  renderProperties();
+  showToast(isPinned ? "تم إلغاء تثبيت العقار." : "تم تثبيت العقار وسيظهر أولاً.");
 });
 
 document.getElementById("map-toggle").addEventListener("click", () => {
