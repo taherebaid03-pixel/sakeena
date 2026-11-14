@@ -1,0 +1,259 @@
+html<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#1c212b">
+  <title>Sakeena | Find your next home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" aria-label="Sakeena - الصفحة الرئيسية">
+      <span class="brand-mark">S</span>
+      <span>Sakeena<span class="brand-dot">.</span></span>
+    </a>
+    <nav class="main-nav" aria-label="التنقل الرئيسي">
+      <a class="active" href="#listings">اكتشف العقارات</a>
+      <a href="#how-it-works">كيف تعمل المنصة</a>
+      <a href="#contact">تواصل معنا</a>
+    </nav>
+    <div class="header-actions">
+      <button class="login-button" id="open-login" type="button">تسجيل الدخول</button>
+      <button class="login-button" id="logout-button" type="button" hidden>تسجيل الخروج</button>
+      <button class="post-ad-button" id="open-property-form" type="button">أضف عقارك <span aria-hidden="true">＋</span></button>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="فتح القائمة">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="eyebrow-dot"></span> عقارات للبيع والإيجار</span>
+        <h1>دور على عقارك<br><span>بسهولة.</span></h1>
+        <p>فلتر حسب المنطقة والسعر، شوف تفاصيل العقار على الخريطة، وتواصل مباشرة مع المعلن.</p>
+        <div class="hero-stats">
+          <div><strong>بحث مرن</strong><span>حسب المنطقة والسعر</span></div>
+          <div><strong>خريطة</strong><span>مواقع تقريبية للعقارات</span></div>
+          <div><strong>تواصل مباشر</strong><span>مع المعلن</span></div>
+        </div>
+      </div>
+      <div class="hero-art" aria-label="صورة لمجمع سكني وسط المساحات الخضراء">
+        <img src="https://images.unsplash.com/photo-1640702603390-98c659d55ab2?auto=format&fit=crop&w=1200&q=85" alt="مجموعة من المباني السكنية تحيط بها المساحات الخضراء">
+        <div class="hero-note">
+          <span class="note-icon">⌂</span>
+          <span><strong>تفاصيل واضحة</strong><small>السعر والمساحة وطريقة التواصل</small></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="search-panel" aria-label="البحث عن عقار">
+      <div class="search-tabs" role="group" aria-label="نوع العملية">
+        <button class="search-tab selected" type="button" data-kind="الكل">الكل</button>
+        <button class="search-tab" type="button" data-kind="للبيع">للبيع</button>
+        <button class="search-tab" type="button" data-kind="للإيجار">للإيجار</button>
+      </div>
+      <div class="search-fields">
+        <label class="field location-field">
+          <span>المنطقة</span>
+          <select id="area-filter">
+            <option value="">كل المناطق</option>
+            <option value="التجمع الخامس">التجمع الخامس</option>
+            <option value="الشيخ زايد">الشيخ زايد</option>
+            <option value="المعادي">المعادي</option>
+            <option value="العاصمة الإدارية">العاصمة الإدارية</option>
+            <option value="الساحل الشمالي">الساحل الشمالي</option>
+            <option value="مدينة نصر">مدينة نصر</option>
+            <option value="الإسكندرية">الإسكندرية</option>
+            <option value="العين السخنة">العين السخنة</option>
+            <option value="السادس من أكتوبر">السادس من أكتوبر</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>أقل سعر <small>(جنيه)</small></span>
+          <input id="min-price" type="number" min="0" placeholder="بدون حد أدنى">
+        </label>
+        <label class="field">
+          <span>أعلى سعر <small>(جنيه)</small></span>
+          <input id="max-price" type="number" min="0" placeholder="بدون حد أقصى">
+        </label>
+        <button class="search-button" id="search-button" type="button"><span>⌕</span> ابحث عن عقار</button>
+      </div>
+    </section>
+
+    <section class="financing-section" aria-labelledby="financing-title">
+      <div class="financing-copy">
+        <span class="section-kicker">خطط ميزانيتك</span>
+        <h2 id="financing-title">احسب قسط عقارك</h2>
+        <p>أدخل سعر العقار ومدة السداد ونسبة الفائدة السنوية إن وُجدت.</p>
+      </div>
+      <form class="financing-form" id="financing-form">
+        <label>سعر العقار (جنيه)
+          <input name="price" type="number" min="1" step="1" placeholder="مثال: 2500000" required>
+        </label>
+        <label>مدة السداد (سنة)
+          <input name="years" type="number" min="1" max="40" step="1" value="10" required>
+        </label>
+        <label>الفائدة السنوية (%)
+          <input name="annual-rate" type="number" min="0" max="100" step="0.01" value="0" placeholder="0">
+        </label>
+        <button class="search-button" type="submit">احسب القسط</button>
+      </form>
+      <div class="financing-result" id="financing-result" aria-live="polite" hidden>
+        <div><span>القسط الشهري التقريبي</span><strong id="monthly-installment"></strong></div>
+        <div><span>إجمالي المبلغ</span><strong id="total-payment"></strong></div>
+        <div><span>إجمالي الفائدة</span><strong id="total-interest"></strong></div>
+      </div>
+      <p class="financing-note">حساب تقديري على أساس تمويل كامل سعر العقار وثبات الفائدة، من غير مقدم أو رسوم إدارية.</p>
+    </section>
+
+    <section class="listings-section" id="listings">
+      <div class="section-heading">
+        <div>
+          <span class="section-kicker">اختيارات تستحق المشاهدة</span>
+          <h2>عقارات مميزة <span id="results-count"></span></h2>
+        </div>
+        <div class="listing-controls">
+          <label class="sort-control">ترتيب حسب
+            <select id="sort-filter">
+              <option value="recommended">الأحدث والأفضل</option>
+              <option value="low">السعر: الأقل أولاً</option>
+              <option value="high">السعر: الأعلى أولاً</option>
+            </select>
+          </label>
+          <button class="map-toggle" id="map-toggle" type="button"><span>⌖</span> تكبير الخريطة</button>
+        </div>
+      </div>
+
+      <div class="results-layout">
+        <div class="property-grid" id="property-grid"></div>
+        <aside class="map-panel" id="map-panel" aria-label="خريطة المناطق">
+          <div class="map-toolbar">
+            <div class="map-label"><span class="map-pulse"></span> عقارات على الخريطة</div>
+            <button class="map-expand" id="map-expand" type="button" aria-label="تكبير الخريطة" title="تكبير الخريطة">⛶</button>
+          </div>
+          <div id="real-map" role="application" aria-label="خريطة تفاعلية للعقارات"></div>
+          <div class="map-controls" aria-label="أدوات الخريطة">
+            <button id="map-zoom-in" type="button" aria-label="تكبير الخريطة" title="تكبير">＋</button>
+            <button id="map-zoom-out" type="button" aria-label="تصغير الخريطة" title="تصغير">−</button>
+            <button id="map-reset" type="button" aria-label="إظهار كل العقارات" title="إظهار كل العقارات">⌖</button>
+          </div>
+          <div class="map-status" id="map-status" hidden></div>
+        </aside>
+      </div>
+      <div class="empty-state" id="empty-state" hidden>
+        <span>⌂</span><h3>مفيش عقارات مطابقة لبحثك</h3>
+        <p>جرّب توسّع نطاق السعر أو تختار منطقة تانية.</p>
+        <button id="clear-filters" type="button">عرض كل العقارات</button>
+      </div>
+      <p class="demo-note">العقارات وبيانات التواصل المعروضة تجريبية، ومواقع الخريطة تقريبية حسب المنطقة.</p>
+    </section>
+
+    <section class="how-section" id="how-it-works">
+      <div><span class="section-kicker">تجربة أسهل من أول خطوة</span><h2>دور، اختار، واتواصل.</h2></div>
+      <div class="how-steps">
+        <article><span>01</span><h3>حدد اللي بتدور عليه</h3><p>اختار المنطقة ونوع العقار والميزانية المناسبة ليك.</p></article>
+        <article><span>02</span><h3>قارن براحتك</h3><p>شوف التفاصيل والصور والموقع، من غير ما تحتاج تسجل.</p></article>
+        <article><span>03</span><h3>كلم صاحب الإعلان</h3><p>تواصل مباشرة بالتليفون أو واتساب واسأل عن كل التفاصيل.</p></article>
+      </div>
+    </section>
+
+    <section class="contact-section" id="contact" aria-labelledby="contact-title">
+      <div>
+        <span class="section-kicker">محتاج مساعدة؟</span>
+        <h2 id="contact-title">إحنا موجودين علشانك.</h2>
+        <p>اكتب بياناتك ورسالتك، وهتفتح مسودة جاهزة للإرسال على Gmail.</p>
+      </div>
+      <form class="contact-form" id="contact-form">
+        <label>اسمك<input name="name" type="text" maxlength="60" required></label>
+        <label>بريدك الإلكتروني<input name="email" type="email" required></label>
+        <label class="contact-message-field">رسالتك<textarea name="message" rows="3" maxlength="2000" required></textarea></label>
+        <button class="contact-gmail" type="submit">جهّز رسالة على Gmail ↗</button>
+        <a class="contact-email" href="mailto:taherebaid55@gmail.com">taherebaid55@gmail.com</a>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="#"><span class="brand-mark">S</span><span>Sakeena<span class="brand-dot">.</span></span></a>
+    <p>خطوتك الأولى لبيت تحبه.</p>
+    <span>© ٢٠٢٦ Sakeena. جميع الحقوق محفوظة.</span>
+  </footer>
+
+  <div class="modal-backdrop" id="property-modal" hidden>
+    <section class="login-modal property-modal" role="dialog" aria-modal="true" aria-labelledby="property-title">
+      <button class="modal-close" id="close-property-form" type="button" aria-label="إغلاق">×</button>
+      <span class="modal-mark">S</span>
+      <span class="section-kicker">إعلانك هيوصل لناس أكتر</span>
+      <h2 id="property-title">أضف عقارك على Sakeena</h2>
+      <p>املأ البيانات الأساسية، وهيظهر إعلانك فوراً ضمن العقارات.</p>
+      <form id="property-form" class="property-form">
+        <label class="form-wide">عنوان الإعلان<input name="title" type="text" placeholder="مثال: شقة واسعة بإطلالة مميزة" maxlength="70" required></label>
+        <label>نوع الإعلان<select name="kind" required><option value="للبيع">للبيع</option><option value="للإيجار">للإيجار</option></select></label>
+        <label>نوع العقار<select name="type" required><option>شقة</option><option>فيلا</option><option>دوبلكس</option><option>شاليه</option><option>استوديو</option></select></label>
+        <label>المنطقة<select name="area" required><option value="التجمع الخامس">التجمع الخامس</option><option value="الشيخ زايد">الشيخ زايد</option><option value="المعادي">المعادي</option><option value="العاصمة الإدارية">العاصمة الإدارية</option><option value="الساحل الشمالي">الساحل الشمالي</option><option value="مدينة نصر">مدينة نصر</option><option value="الإسكندرية">الإسكندرية</option><option value="العين السخنة">العين السخنة</option><option value="السادس من أكتوبر">السادس من أكتوبر</option></select></label>
+        <label>السعر بالجنيه<input name="price" type="number" min="1" step="1" placeholder="مثال: 2500000" required></label>
+        <label>عدد الغرف<input name="beds" type="number" min="0" max="30" value="2" required></label>
+        <label>عدد الحمامات<input name="baths" type="number" min="0" max="20" value="1" required></label>
+        <label>المساحة بالمتر<input name="size" type="number" min="1" placeholder="مثال: 140" required></label>
+        <label class="form-wide">رابط صورة العقار <small>(اختياري)</small><input name="image" type="url" placeholder="https://example.com/property.jpg"></label>
+        <label>اسم المعلن<input name="publisher" type="text" maxlength="40" placeholder="اسمك" required></label>
+        <label>رقم واتساب
+          <span class="phone-input">
+            <span class="phone-country-code" aria-hidden="true">+20</span>
+            <input name="phone" type="tel" inputmode="numeric" placeholder="1xxxxxxxxx" maxlength="11" pattern="0?1[0125][0-9]{8}" aria-describedby="phone-help" required>
+          </span>
+          <small id="phone-help">مفتاح مصر +20 مضاف تلقائيًا</small>
+        </label>
+        <button class="search-button form-wide" type="submit">نشر الإعلان</button>
+      </form>
+      <p class="form-message" id="property-message" aria-live="polite"></p>
+    </section>
+  </div>
+
+  <div class="modal-backdrop" id="login-modal" hidden>
+    <section class="login-modal" role="dialog" aria-modal="true" aria-labelledby="login-title">
+      <button class="modal-close" id="close-login" type="button" aria-label="إغلاق">×</button>
+      <span class="modal-mark">د</span>
+      <span class="section-kicker">أهلاً بيك في Sakeena</span>
+      <h2 id="login-title">سجّل دخولك</h2>
+      <p id="login-description">أنشئ حسابًا أو سجّل دخولك لاستخدام مساعد العقارات.</p>
+      <form id="login-form">
+        <label id="name-field" hidden>الاسم<input name="name" type="text" autocomplete="name" maxlength="60"></label>
+        <label>البريد الإلكتروني<input name="email" type="email" placeholder="name@example.com" autocomplete="email" required></label>
+        <label>كلمة المرور<input name="password" type="password" placeholder="٨ أحرف على الأقل" minlength="8" autocomplete="current-password" required></label>
+        <label id="remember-session-field" class="remember-session"><input id="remember-session" type="checkbox" checked> تذكّرني على هذا الجهاز</label>
+        <button class="search-button" id="auth-submit" type="submit">تسجيل الدخول</button>
+      </form>
+      <p class="form-message" id="form-message" aria-live="polite"></p>
+      <button class="auth-mode-toggle" id="auth-mode-toggle" type="button">إنشاء حساب جديد</button>
+    </section>
+  </div>
+  <button class="chat-launcher" id="chat-launcher" type="button" aria-controls="chat-panel" aria-expanded="false">اسأل مساعد Sakeena <span aria-hidden="true">✦</span></button>
+  <section class="chat-panel" id="chat-panel" aria-label="مساعد العقارات" hidden>
+    <header class="chat-header">
+      <div><strong>مساعد Sakeena</strong><small>اسأل عن العقارات والمناطق</small></div>
+      <button id="chat-close" type="button" aria-label="إغلاق المحادثة">×</button>
+    </header>
+    <div class="chat-messages" id="chat-messages" role="log" aria-live="polite">
+      <p class="chat-message assistant-message">أهلاً بيك في سكينة للعقارات! سجّل دخولك واسألني عن العقارات المتاحة.</p>
+    </div>
+    <form class="chat-form" id="chat-form">
+      <label class="sr-only" for="chat-input">اكتب سؤالك</label>
+      <input id="chat-input" name="message" type="text" maxlength="1000" placeholder="اكتب سؤالك هنا..." autocomplete="off" required>
+      <button type="submit" aria-label="إرسال الرسالة">➤</button>
+    </form>
+    <p class="chat-disclaimer">تُعالَج الرسائل عبر خدمة الذكاء الاصطناعي، ولا تُحفظ في الموقع.</p>
+  </section>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
