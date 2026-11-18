@@ -311,9 +311,9 @@ function renderProperties() {
         <h3>${escapeHTML(property.title)}</h3>
         <div class="property-location"><span>⌖</span>${escapeHTML(property.city)}</div>
         <div class="property-meta">
-          <span>▤ ${property.beds} غرف</span>
-          <span>▣ ${property.baths} حمام</span>
-          <span>⌗ ${new Intl.NumberFormat("ar-EG").format(property.size)} م²</span>
+          <span><span class="property-meta-icon" aria-hidden="true">▤</span> ${property.beds} غرف</span>
+          <span><span class="property-meta-icon" aria-hidden="true">▣</span> ${property.baths} حمام</span>
+          <span><span class="property-meta-icon" aria-hidden="true">⌗</span> ${new Intl.NumberFormat("ar-EG").format(property.size)} م²</span>
         </div>
         <div class="card-footer">
           <div class="publisher"><span class="publisher-avatar">${escapeHTML(property.initials)}</span>${escapeHTML(property.publisher)}</div>
@@ -474,7 +474,7 @@ function appendChatMessage(message, sender) {
 }
 
 document.addEventListener("click", (event) => {
-  const icon = event.target.closest(".favorite, .map-expand, .map-controls button, .menu-toggle, .modal-close, .chat-header button, .chat-form button");
+  const icon = event.target.closest(".favorite, .map-expand, .map-controls button, .menu-toggle, .modal-close, .chat-header button, .chat-form button, .post-ad-button span, .search-button span, .map-toggle span, .chat-launcher span");
   if (!icon) return;
   icon.classList.remove("icon-burst");
   void icon.offsetWidth;
