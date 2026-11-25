@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0c1424">
+  <title>Sakeena | تفاصيل العقار</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20261125-voice">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark">S</span><span>Sakeena<span class="brand-dot">.</span></span></a>
+    <nav class="main-nav" aria-label="التنقل الرئيسي">
+      <a class="active" href="index.html">العقارات</a><a href="appointments.html">مواعيدي</a><a href="financing.html">التمويل</a><a href="about.html">عن المنصة</a><a href="reviews.html">آراء العملاء</a><a href="contact.html">تواصل معنا</a>
+    </nav>
+    <div class="header-actions">
+      <button class="site-setting-button" id="language-toggle" type="button" aria-label="Switch to English">EN</button>
+      <button class="site-setting-button" id="theme-toggle" type="button" aria-label="التبديل إلى الوضع النهاري" title="الوضع النهاري">☀</button>
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="فتح القائمة">☰</button>
+    </div>
+  </header>
+  <main class="property-details-page">
+    <a class="back-to-listings" href="index.html">← العودة للعقارات</a>
+    <section class="property-detail-content" id="property-detail-content" hidden aria-live="polite">
+      <div class="property-detail-heading">
+        <div><span class="section-kicker" id="detail-location"></span><h1 id="detail-title"></h1></div>
+        <span class="property-tag detail-tag" id="detail-tag"></span>
+      </div>
+      <div class="property-detail-layout">
+        <section class="property-gallery" aria-label="صور العقار">
+          <div class="property-gallery-stage">
+            <img id="detail-image" alt="">
+            <button id="gallery-previous" type="button" aria-label="الصورة السابقة">‹</button>
+            <button id="gallery-next" type="button" aria-label="الصورة التالية">›</button>
+            <span id="gallery-counter" class="gallery-counter"></span>
+          </div>
+          <div id="gallery-thumbnails" class="gallery-thumbnails"></div>
+        </section>
+        <aside class="property-detail-card">
+          <div class="property-price" id="detail-price"></div>
+          <div class="property-unit-price" id="detail-unit-price"></div>
+          <dl class="property-detail-specs">
+            <div><dt>النوع</dt><dd id="detail-type"></dd></div>
+            <div><dt>المساحة</dt><dd id="detail-size"></dd></div>
+            <div><dt>الغرف</dt><dd id="detail-beds"></dd></div>
+            <div><dt>الحمامات</dt><dd id="detail-baths"></dd></div>
+            <div><dt>المدينة</dt><dd id="detail-city"></dd></div>
+          </dl>
+          <p class="property-description-label">وصف العقار</p>
+          <p id="detail-description" class="property-description"></p>
+          <div class="property-owner">
+            <span class="publisher-avatar" id="detail-initials"></span>
+            <span><strong id="detail-publisher"></strong><small>صاحب الإعلان</small></span>
+          </div>
+          <a class="contact-button detail-contact" id="detail-contact" target="_blank" rel="noopener noreferrer">تواصل واتساب ↗</a>
+          <a class="detail-map-link" id="detail-map" target="_blank" rel="noopener noreferrer">عرض الموقع التقريبي على الخريطة ↗</a>
+          <a class="detail-map-link" id="roi-calculator-link" href="financing.html">احسب عائد الاستثمار العقاري ↗</a>
+          <section class="appointment-panel" id="appointment-panel" hidden aria-labelledby="appointment-title">
+            <h2 id="appointment-title">احجز موعد معاينة</h2>
+            <p id="appointment-access-message"></p>
+            <form id="appointment-form" hidden>
+              <label>التاريخ والوقت<input name="scheduled-at" type="datetime-local" required></label>
+              <label>رقم هاتف للتواصل<input name="phone" type="tel" inputmode="tel" pattern="[0-9+() -]{7,20}" maxlength="20" required></label>
+              <label>ملاحظة لصاحب الإعلان<textarea name="note" rows="2" maxlength="500"></textarea></label>
+              <button class="search-button" type="submit">إرسال طلب المعاينة</button>
+            </form>
+            <p class="form-message" id="appointment-message" role="status" aria-live="polite"></p>
+          </section>
+          <button class="detail-favorite" id="detail-favorite" type="button" aria-pressed="false">♡ حفظ في المفضلة</button>
+          <p class="form-message detail-message" id="detail-message" role="status" aria-live="polite"></p>
+        </aside>
+      </div>
+    </section>
+    <section class="empty-state details-not-found" id="details-not-found" hidden>
+      <span>⌂</span><h1>تعذر العثور على العقار</h1>
+      <p>افتح تفاصيل العقار من بطاقة الإعلان حتى تظهر بياناته.</p>
+      <a class="search-button" href="index.html">العودة إلى العقارات</a>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <a class="brand footer-brand" href="index.html"><span class="brand-mark">S</span><span>Sakeena<span class="brand-dot">.</span></span></a>
+    <p>خطوتك الأولى لبيت تحبه.</p><span>© ٢٠٢٦ Sakeena. جميع الحقوق محفوظة.</span>
+  </footer>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="supabase-config.js"></script>
+  <script defer src="supabase-client.js?v=20261125"></script>
+  <script defer src="site.js?v=20261125-voice"></script>
+  <script defer src="property-details.js?v=20261125"></script>
+</body>
+</html>
