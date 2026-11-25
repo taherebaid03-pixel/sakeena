@@ -1759,6 +1759,87 @@ function playWelcome() {
   window.speechSynthesis.speak(utterance);
 }
 
+let welcomeAudioPlaying = false;
+function setWelcomeAudioState(state, status = "") {
+  const button = document.getElementById("welcome-audio-button");
+  const label = document.getElementById("welcome-audio-label");
+  const statusElement = document.getElementById("welcome-audio-status");
+  if (!button || !label || !statusElement) return;
+
+  const language = document.documentElement.lang === "en" ? "en" : "ar";
+  const labels = {
+    ready: { ar: "استمع للترحيب", en: "Listen to the welcome message" },
+    playing: { ar: "إيقاف الترحيب", en: "Stop welcome message" },
+    replay: { ar: "إعادة الاستماع", en: "Listen again" }
+  };
+  const labelText = labels[state] || labels.ready;
+  label.textContent = labelText[language];
+  button.setAttribute("aria-label", labelText[language]);
+  button.title = labelText[language];
+  button.setAttribute("aria-pressed", String(state === "playing"));
+  statusElement.textContent = status;
+}
+
+function playWelcomeMessage() {
+  if (!("speechSynthesis" in window) || typeof SpeechSynthesisUtterance === "undefined") {
+    setWelcomeAudioState("ready", document.documentElement.lang === "en"
+      ? "Your browser does not support text-to-speech."
+      : "متصفحك لا يدعم القراءة الصوتية.");
+    return;
+  }
+
+  if (welcomeAudioPlaying) {
+    welcomeSpeechRequest += 1;
+    welcomeAudioPlaying = false;
+    welcomeSpeechPending = false;
+    window.speechSynthesis.cancel();
+    setWelcomeAudioState("ready");
+    return;
+  }
+
+  const language = document.documentElement.lang === "en" ? "en-US" : "ar-EG";
+  const message = document.documentElement.lang === "en"
+    ? "Welcome to Sakeena, your real-estate platform. We are here to help you find your dream home or next investment with ease and confidence. Explore the latest listings and contact property owners whenever you need. We hope you enjoy your visit."
+    : "أَهْلًا بِكَ فِي مَنَصَّةِ سَكِينَةَ العَقَارِيَّة. نَحْنُ هُنَا لِنُسَاعِدَكَ فِي العُثُورِ عَلَى مَنْزِلِ أَحْلَامِكَ أَوِ اسْتِثْمَارِكَ القَادِمِ بِكُلِّ سُهُولَةٍ وَأَمَانٍ. تَصَفَّحْ أَحْدَثَ العُرُوضِ، وَتَوَاصَلْ مَعَ مُسْتَشَارِينَا فِي أَيِّ وَقْتٍ. نَتَمَنَّى لَكَ جَوْلَةً مُوَفَّقَةً.";
+  const utterance = new SpeechSynthesisUtterance(message);
+  utterance.lang = language;
+  utterance.rate = 0.92;
+  utterance.pitch = 1.05;
+
+  const voices = window.speechSynthesis.getVoices();
+  const languagePrefix = language.slice(0, 2).toLowerCase();
+  const voice = voices.find((item) => item.lang.toLowerCase() === language.toLowerCase())
+    || voices.find((item) => item.lang.toLowerCase().startsWith(languagePrefix));
+  if (voice) utterance.voice = voice;
+
+  welcomeSpeechRequest += 1;
+  const requestId = welcomeSpeechRequest;
+  welcomeHasPlayed = true;
+  welcomeSpeechPending = false;
+  welcomeAudioPlaying = true;
+  window.speechSynthesis.cancel();
+  setWelcomeAudioState("playing", document.documentElement.lang === "en" ? "Speaking..." : "جاري التحدث...");
+
+  const finish = (state, status = "") => {
+    if (requestId !== welcomeSpeechRequest) return;
+    welcomeAudioPlaying = false;
+    setWelcomeAudioState(state, status);
+  };
+  utterance.onend = () => finish("replay");
+  utterance.onerror = (event) => {
+    const interrupted = event.error === "canceled" || event.error === "interrupted";
+    finish(interrupted ? "ready" : "replay", interrupted ? "" : (
+      document.documentElement.lang === "en"
+        ? "Could not play the welcome message. Please try again."
+        : "تعذر تشغيل الترحيب الصوتي. حاول مرة أخرى."
+    ));
+  };
+
+  window.speechSynthesis.speak(utterance);
+}
+
+document.getElementById("welcome-audio-button")?.addEventListener("click", playWelcomeMessage);
+
 function getSpokenElementName(element) {
   if (!element) return "";
   const ariaLabel = element.getAttribute("aria-label");
@@ -1790,7 +1871,7 @@ function speakElementName(element) {
 }
 
 document.addEventListener("pointerdown", (event) => {
-  if (event.target.closest("[data-voice-control]")) return;
+  if (event.target.closest("[data-voice-control], [data-welcome-audio]")) return;
   if (!welcomeHasPlayed && window.matchMedia("(max-width: 620px), (pointer: coarse)").matches) {
     playWelcome();
     return;

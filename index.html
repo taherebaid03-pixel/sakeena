@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261125-voice">
+  <link rel="stylesheet" href="style.css?v=20261125-welcome-audio">
 </head>
 <body>
   <header class="site-header">
@@ -40,6 +40,16 @@
         <span class="eyebrow"><span class="eyebrow-dot"></span> عقارات للبيع والإيجار</span>
         <h1>دور على عقارك<br><span>بسهولة.</span></h1>
         <p>فلتر حسب المنطقة والسعر، شوف تفاصيل العقار على الخريطة، وتواصل مباشرة مع المعلن.</p>
+        <div class="welcome-audio-box">
+          <button class="welcome-audio-button" id="welcome-audio-button" data-welcome-audio type="button" aria-label="استمع للترحيب" aria-describedby="welcome-audio-caption welcome-audio-status" aria-pressed="false">
+            <span aria-hidden="true">🔊</span>
+            <span id="welcome-audio-label">استمع للترحيب</span>
+          </button>
+          <div class="welcome-audio-copy">
+            <p class="welcome-text" id="welcome-audio-caption">مرحباً بك! اكتشف معنا أفضل الفرص العقارية.</p>
+            <span class="welcome-audio-status" id="welcome-audio-status" role="status" aria-live="polite"></span>
+          </div>
+        </div>
         <div class="hero-stats">
           <div><strong>بحث مرن</strong><span>حسب المنطقة والسعر</span></div>
           <div><strong>خريطة</strong><span>مواقع تقريبية للعقارات</span></div>
@@ -306,7 +316,7 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script defer src="supabase-config.js"></script>
   <script defer src="supabase-client.js?v=20261125"></script>
-  <script defer src="site.js?v=20261125-voice"></script>
-  <script defer src="script.js?v=20261125-voice"></script>
+  <script defer src="site.js?v=20261125-welcome-audio"></script>
+  <script defer src="script.js?v=20261125-welcome-audio"></script>
 </body>
 </html>
