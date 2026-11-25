@@ -15,6 +15,7 @@
     "فلتر حسب المنطقة والسعر، شوف تفاصيل العقار على الخريطة، وتواصل مباشرة مع المعلن.": "Filter by area and price, view property locations on the map, and contact owners directly.",
     "استمع للترحيب": "Listen to the welcome message",
     "جاري التحدث...": "Speaking...",
+    "جاري التشغيل...": "Playing welcome audio...",
     "إيقاف الترحيب": "Stop welcome message",
     "إعادة الاستماع": "Listen again",
     "مرحباً بك! اكتشف معنا أفضل الفرص العقارية.": "Welcome! Discover the best real-estate opportunities with us.",
